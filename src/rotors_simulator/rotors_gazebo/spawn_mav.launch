@@ -1,0 +1,25 @@
+<launch>
+  <arg name="mav_name" default="firefly"/>
+  <arg name="mav_model" default="$(find rotors_description)/urdf/firefly.xacro"/>
+
+  <!-- 生成无人机模型 -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(arg mav_model)' mav_name:=$(arg mav_name) namespace:=$(arg mav_name)"/>
+  <node name="spawn_$(arg mav_name)" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -param robot_description -model $(arg mav_name) -x 0 -y 0 -z 0.2"/>
+
+  <!-- 启动控制器节点 -->
+  <node name="lee_position_controller" pkg="rotors_control" type="lee_position_controller_node" output="screen">
+    <remap from="~odometry" to="/$(arg mav_name)/odometry_sensor1/odometry"/>
+    <remap from="~command/pose" to="/$(arg mav_name)/command/pose"/>
+  </node>
+
+  <!-- 里程计节点（如果存在） -->
+  <node name="odometry" pkg="rotors_odometry" type="odometry_node" output="screen" if="$(eval 'rotors_odometry' in ['rotors_odometry'])">
+    <remap from="~odometry" to="/$(arg mav_name)/odometry_sensor1/odometry"/>
+  </node>
+
+  <!-- IMU 姿态节点（如果存在） -->
+  <node name="imu_attitude" pkg="rotors_imu_att" type="imu_attitude_node" output="screen" if="$(eval 'rotors_imu_att' in ['rotors_imu_att'])">
+    <remap from="~imu" to="/$(arg mav_name)/imu"/>
+  </node>
+</launch>

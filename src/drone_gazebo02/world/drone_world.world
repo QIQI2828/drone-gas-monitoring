@@ -1,0 +1,210 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="drone_world">
+
+    <!-- 太阳光照 -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- 地面平面 -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- 物理引擎，必须指定 type 且 collision/visual 要有 name -->
+    <physics name="default_physics" type="ode" default="0">
+      <gravity>0 0 -9.81</gravity>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>10</iters>
+          <precon_iters>0</precon_iters>
+          <sor>1.3</sor>
+        </solver>
+        <constraints>
+          <cfm>0.0</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>100.0</contact_max_correcting_vel>
+          <contact_surface_layer>0.001</contact_surface_layer>
+        </constraints>
+      </ode>
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- 风场插件 -->
+    <plugin name="wind_plugin" filename="libgazebo_wind_plugin.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>10.0</updateRate>
+      <velocity>5.0 2.0 0.0</velocity>
+      <affect_all>false</affect_all>
+      <startupDelay>0.0</startupDelay>
+      <turbulence>0.1</turbulence>
+    </plugin>
+
+    <!-- 飞行边界墙（100x100x20） -->
+    <model name="boundary">
+      <!-- 前墙 +Y -->
+      <link name="front_wall">
+        <collision name="collision_front">
+          <pose>0 50 10 0 0 0</pose>
+          <geometry><box><size>100 0.1 20</size></box></geometry>
+        </collision>
+        <visual name="visual_front">
+          <pose>0 50 10 0 0 0</pose>
+          <geometry><box><size>100 0.1 20</size></box></geometry>
+          <material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material>
+        </visual>
+      </link>
+      <!-- 后墙 -Y -->
+      <link name="back_wall">
+        <collision name="collision_back">
+          <pose>0 -50 10 0 0 0</pose>
+          <geometry><box><size>100 0.1 20</size></box></geometry>
+        </collision>
+        <visual name="visual_back">
+          <pose>0 -50 10 0 0 0</pose>
+          <geometry><box><size>100 0.1 20</size></box></geometry>
+          <material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material>
+        </visual>
+      </link>
+      <!-- 左墙 -X -->
+      <link name="left_wall">
+        <collision name="collision_left">
+          <pose>-50 0 10 0 0 0</pose>
+          <geometry><box><size>0.1 100 20</size></box></geometry>
+        </collision>
+        <visual name="visual_left">
+          <pose>-50 0 10 0 0 0</pose>
+          <geometry><box><size>0.1 100 20</size></box></geometry>
+          <material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material>
+        </visual>
+      </link>
+      <!-- 右墙 +X -->
+      <link name="right_wall">
+        <collision name="collision_right">
+          <pose>50 0 10 0 0 0</pose>
+          <geometry><box><size>0.1 100 20</size></box></geometry>
+        </collision>
+        <visual name="visual_right">
+          <pose>50 0 10 0 0 0</pose>
+          <geometry><box><size>0.1 100 20</size></box></geometry>
+          <material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.5 0.5 0.5 1</diffuse></material>
+        </visual>
+      </link>
+
+      <!-- 固定关节 -->
+      <joint name="world_to_front" type="fixed"><parent>world</parent><child>front_wall</child></joint>
+      <joint name="world_to_back" type="fixed"><parent>world</parent><child>back_wall</child></joint>
+      <joint name="world_to_left" type="fixed"><parent>world</parent><child>left_wall</child></joint>
+      <joint name="world_to_right" type="fixed"><parent>world</parent><child>right_wall</child></joint>
+    </model>
+
+    <!-- 障碍物1：化工储罐 -->
+    <model name="storage_tank">
+      <pose>25 20 0 0 0 0</pose>
+      <link name="tank_body">
+        <collision name="collision_tank">
+          <geometry><cylinder><radius>3.0</radius><length>8.0</length></cylinder></geometry>
+          <pose>0 0 4 0 0 0</pose>
+        </collision>
+        <visual name="visual_tank">
+          <geometry><cylinder><radius>3.0</radius><length>8.0</length></cylinder></geometry>
+          <pose>0 0 4 0 0 0</pose>
+          <material><ambient>0.5 0.5 0.5 1</ambient><diffuse>0.7 0.7 0.7 1</diffuse></material>
+        </visual>
+        <inertial>
+          <mass>1000.0</mass>
+          <inertia><ixx>5000</ixx><iyy>5000</iyy><izz>800</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia>
+        </inertial>
+      </link>
+      <static>true</static>
+    </model>
+
+    <!-- 障碍物2：厂房 -->
+    <model name="factory_building">
+      <pose>-20 -15 0 0 0 0</pose>
+      <link name="building_body">
+        <collision name="collision_building">
+          <geometry><box><size>15 25 10</size></box></geometry>
+          <pose>0 0 5 0 0 0</pose>
+        </collision>
+        <visual name="visual_building">
+          <geometry><box><size>15 25 10</size></box></geometry>
+          <pose>0 0 5 0 0 0</pose>
+          <material><ambient>0.8 0.2 0.2 1</ambient><diffuse>0.9 0.3 0.3 1</diffuse></material>
+        </visual>
+        <inertial>
+          <mass>2000.0</mass>
+          <inertia><ixx>20000</ixx><iyy>20000</iyy><izz>10000</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia>
+        </inertial>
+      </link>
+      <static>true</static>
+    </model>
+
+    <!-- 障碍物3：烟囱塔 -->
+    <model name="chimney_tower">
+      <pose>10 -25 0 0 0 0</pose>
+      <link name="tower_body">
+        <collision name="collision_tower">
+          <geometry><cylinder><radius>1.2</radius><length>12.0</length></cylinder></geometry>
+          <pose>0 0 6 0 0 0</pose>
+        </collision>
+        <visual name="visual_tower">
+          <geometry><cylinder><radius>1.2</radius><length>12.0</length></cylinder></geometry>
+          <pose>0 0 6 0 0 0</pose>
+          <material><ambient>0.4 0.4 0.5 1</ambient><diffuse>0.5 0.5 0.6 1</diffuse></material>
+        </visual>
+        <inertial>
+          <mass>500.0</mass>
+          <inertia><ixx>500</ixx><iyy>500</iyy><izz>800</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia>
+        </inertial>
+      </link>
+      <static>true</static>
+    </model>
+
+    <!-- 障碍物4：低矮设备区1 -->
+    <model name="pipe_obstacle_1">
+      <pose>-30 30 0 0 0 0</pose>
+      <link name="pipe_link">
+        <collision name="collision_pipe1">
+          <geometry><box><size>4 1 1.5</size></box></geometry>
+          <pose>0 0 0.75 0 0 0</pose>
+        </collision>
+        <visual name="visual_pipe1">
+          <geometry><box><size>4 1 1.5</size></box></geometry>
+          <pose>0 0 0.75 0 0 0</pose>
+          <material><ambient>0.2 0.6 0.2 1</ambient><diffuse>0.3 0.7 0.3 1</diffuse></material>
+        </visual>
+        <inertial>
+          <mass>100.0</mass>
+          <inertia><ixx>100</ixx><iyy>50</iyy><izz>100</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia>
+        </inertial>
+      </link>
+      <static>true</static>
+    </model>
+
+    <!-- 障碍物5：低矮设备区2 -->
+    <model name="pipe_obstacle_2">
+      <pose>-28 32 0 0 0 0</pose>
+      <link name="pipe_link2">
+        <collision name="collision_pipe2">
+          <geometry><box><size>1 3 1.5</size></box></geometry>
+          <pose>0 0 0.75 0 0 0</pose>
+        </collision>
+        <visual name="visual_pipe2">
+          <geometry><box><size>1 3 1.5</size></box></geometry>
+          <pose>0 0 0.75 0 0 0</pose>
+          <material><ambient>0.2 0.6 0.2 1</ambient><diffuse>0.3 0.7 0.3 1</diffuse></material>
+        </visual>
+        <inertial>
+          <mass>80.0</mass>
+          <inertia><ixx>50</ixx><iyy>100</iyy><izz>50</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia>
+        </inertial>
+      </link>
+      <static>true</static>
+    </model>
+
+  </world>
+</sdf>

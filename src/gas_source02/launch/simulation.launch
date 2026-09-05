@@ -1,0 +1,37 @@
+<launch>
+  <!-- 设置 Gazebo 模型路径（确保你的世界和 tudelft 模型能被找到） -->
+  <env name="GAZEBO_MODEL_PATH" value="$(find drone_gazebo02)/models:$(find drone_gazebo02)/models/tudelft_models/models:~/.gazebo/models:$(optenv GAZEBO_MODEL_PATH)"/>
+
+  <!-- 风场参数（供气体扩散模型使用） -->
+  <param name="wind_velocity_x" value="5.0"/>
+  <param name="wind_velocity_y" value="2.0"/>
+  <param name="wind_velocity_z" value="0.0"/>
+
+  <!-- 1. 启动 Gazebo 并加载你的工业园区世界 -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find drone_gazebo02)/world/industrial_park.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- 2. 生成 Firefly 无人机模型（与 drone_controller.py 中定义的模型名称一致） -->
+  <!-- 使用预先生成的 URDF 文件，避免 xacro 解析错误 -->
+  <node name="spawn_firefly" pkg="gazebo_ros" type="spawn_model"
+      args="-file $(env HOME)/gauss02/firefly.urdf -urdf -model firefly -x 0 -y 0 -z 0.2" />
+
+  <!-- 3. 气体浓度服务端（高斯烟羽模型，有风） -->
+  <node name="gas_source_server" pkg="gas_source02" type="gas_source02_server.py" output="screen"/>
+
+  <!-- 4. 气体传感器节点（订阅 /gazebo/model_states，发布 /uav/gas_reading） -->
+  <node name="gas_sensor_node" pkg="gas_source02" type="gas_sensor_node.py" output="screen"/>
+  
+  <!-- 5. 发布 world/map TF -->
+  <node pkg="tf"
+        type="static_transform_publisher"
+        name="world_to_map"
+        args="0 0 0 0 0 0 world map 100" />
+
+</launch>

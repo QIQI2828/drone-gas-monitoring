@@ -1,0 +1,5 @@
+# 请求部分：传感器节点发送的是一个大佬世界坐标系中的位置
+geometry_msgs/Point point
+---
+# 响应部分：气体源节点返回的是该点的计算浓度
+float64 concentration

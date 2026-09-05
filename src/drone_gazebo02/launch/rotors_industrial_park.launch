@@ -1,0 +1,21 @@
+<launch>
+  <env name="GAZEBO_MODEL_PATH" value="$(find drone_gazebo02)/models:$(find drone_gazebo02)/models/tudelft_models/models:~/.gazebo/models:$(optenv GAZEBO_MODEL_PATH)"/>
+
+  <!-- 1. 启动您的世界 -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find drone_gazebo02)/world/industrial_park.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+  </include>
+
+  <!-- 2. 生成无人机 -->
+  <param name="firefly_urdf" command="$(find xacro)/xacro '$(find rotors_description)/urdf/firefly.xacro' mav_name:=firefly namespace:=firefly"/>
+  <node name="spawn_firefly" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -param firefly_urdf -model firefly -x 0 -y 0 -z 0.2" />
+
+  <!-- 3. 风场参数 -->
+  <param name="wind_velocity_x" value="5.0"/>
+  <param name="wind_velocity_y" value="2.0"/>
+  <param name="wind_velocity_z" value="0.0"/>
+</launch>

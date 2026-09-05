@@ -1,0 +1,404 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="industrial_park">
+
+    <!-- ================= 环境基础 ================= -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+  <physics name="default_physics" type="ode" default="0">
+    <gravity>0 0 -9.81</gravity>
+    <ode>
+      <solver>
+        <type>quick</type>
+        <iters>10</iters>
+      </solver>
+    </ode>
+  </physics>
+
+    <!-- ================= 围墙（几何体） ================= -->
+    <model name="wall_north">
+      <static>true</static>
+      <link name="link">
+        <pose>0 55 1.5 0 0 0</pose>
+        <collision name="collision_north">
+          <geometry><box><size>110 0.6 3</size></box></geometry>
+        </collision>
+        <visual name="visual_north">
+          <geometry><box><size>110 0.6 3</size></box></geometry>
+          <material><diffuse>0.3 0.3 0.3 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_south">
+      <static>true</static>
+      <link name="link">
+        <pose>0 -55 1.5 0 0 0</pose>
+        <collision name="collision_south">
+          <geometry><box><size>110 0.6 3</size></box></geometry>
+        </collision>
+        <visual name="visual_south">
+          <geometry><box><size>110 0.6 3</size></box></geometry>
+          <material><diffuse>0.3 0.3 0.3 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_east">
+      <static>true</static>
+      <link name="link">
+        <pose>55 0 1.5 0 0 0</pose>
+        <collision name="collision_east">
+          <geometry><box><size>0.6 110 3</size></box></geometry>
+        </collision>
+        <visual name="visual_east">
+          <geometry><box><size>0.6 110 3</size></box></geometry>
+          <material><diffuse>0.3 0.3 0.3 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="wall_west">
+      <static>true</static>
+      <link name="link">
+        <pose>-55 0 1.5 0 0 0</pose>
+        <collision name="collision_west">
+          <geometry><box><size>0.6 110 3</size></box></geometry>
+        </collision>
+        <visual name="visual_west">
+          <geometry><box><size>0.6 110 3</size></box></geometry>
+          <material><diffuse>0.3 0.3 0.3 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ================= 道路（几何体） ================= -->
+    <model name="road_horizontal">
+      <static>true</static>
+      <link name="link">
+        <pose>0 0 0.05 0 0 0</pose>
+        <visual name="visual_road_h">
+          <geometry><box><size>100 10 0.1</size></box></geometry>
+          <material><diffuse>0.35 0.35 0.35 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="road_vertical">
+      <static>true</static>
+      <link name="link">
+        <pose>0 0 0.05 0 0 1.5708</pose>
+        <visual name="visual_road_v">
+          <geometry><box><size>100 10 0.1</size></box></geometry>
+          <material><diffuse>0.35 0.35 0.35 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="road_north_ring">
+      <static>true</static>
+      <link name="link">
+        <pose>-15 30 0.05 0 0 0</pose>
+        <visual name="visual_road_n">
+          <geometry><box><size>40 7 0.1</size></box></geometry>
+          <material><diffuse>0.4 0.4 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="road_south_ring">
+      <static>true</static>
+      <link name="link">
+        <pose>20 -30 0.05 0 0 0</pose>
+        <visual name="visual_road_s">
+          <geometry><box><size>35 6 0.1</size></box></geometry>
+          <material><diffuse>0.4 0.4 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ================= 建筑（几何体） ================= -->
+    <!-- 主厂房 -->
+    <model name="main_factory">
+      <static>true</static>
+      <link name="base">
+        <pose>-30 -25 4 0 0 0</pose>
+        <collision name="collision_base">
+          <geometry><box><size>22 18 8</size></box></geometry>
+        </collision>
+        <visual name="visual_base">
+          <geometry><box><size>22 18 8</size></box></geometry>
+          <material><diffuse>0.55 0.55 0.6 1</diffuse></material>
+        </visual>
+      </link>
+      <link name="tower">
+        <pose>-30 -25 8 0 0 0</pose>
+        <collision name="collision_tower">
+          <geometry><box><size>5 5 3</size></box></geometry>
+        </collision>
+        <visual name="visual_tower">
+          <geometry><box><size>5 5 3</size></box></geometry>
+          <material><diffuse>0.6 0.6 0.65 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="joint_base_tower" type="fixed">
+        <parent>base</parent>
+        <child>tower</child>
+      </joint>
+    </model>
+
+    <!-- 精馏塔 -->
+    <model name="distillation_tower">
+      <static>true</static>
+      <link name="body">
+        <pose>20 -20 8 0 0 0</pose>
+        <collision name="collision_tower">
+          <geometry><cylinder><radius>2.5</radius><length>16</length></cylinder></geometry>
+        </collision>
+        <visual name="visual_tower">
+          <geometry><cylinder><radius>2.5</radius><length>16</length></cylinder></geometry>
+          <material><diffuse>0.7 0.7 0.75 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 办公楼 -->
+    <model name="office_building">
+      <static>true</static>
+      <link name="base">
+        <pose>-40 35 3 0 0 0</pose>
+        <collision name="collision_base">
+          <geometry><box><size>12 12 6</size></box></geometry>
+        </collision>
+        <visual name="visual_base">
+          <geometry><box><size>12 12 6</size></box></geometry>
+          <material><diffuse>0.85 0.85 0.8 1</diffuse></material>
+        </visual>
+      </link>
+      <link name="roof">
+        <pose>-40 35 6 0 0 0</pose>
+        <collision name="collision_roof">
+          <geometry><box><size>12 12 1.5</size></box></geometry>
+        </collision>
+        <visual name="visual_roof">
+          <geometry><box><size>12 12 1.5</size></box></geometry>
+          <material><diffuse>0.7 0.7 0.75 1</diffuse></material>
+        </visual>
+      </link>
+      <joint name="joint_base_roof" type="fixed">
+        <parent>base</parent>
+        <child>roof</child>
+      </joint>
+    </model>
+
+    <!-- 仓库 -->
+    <model name="warehouse">
+      <static>true</static>
+      <link name="body">
+        <pose>35 25 3 0 0 0</pose>
+        <collision name="collision_warehouse">
+          <geometry><box><size>24 16 6</size></box></geometry>
+        </collision>
+        <visual name="visual_warehouse">
+          <geometry><box><size>24 16 6</size></box></geometry>
+          <material><diffuse>0.4 0.55 0.65 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 冷却塔 -->
+    <model name="cooling_tower">
+      <static>true</static>
+      <link name="body">
+        <pose>15 -35 7 0 0 0</pose>
+        <collision name="collision_cooling">
+          <geometry><cylinder><radius>4.5</radius><length>14</length></cylinder></geometry>
+        </collision>
+        <visual name="visual_cooling">
+          <geometry><cylinder><radius>4.5</radius><length>14</length></cylinder></geometry>
+          <material><diffuse>0.5 0.5 0.5 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 圆柱储罐（两个最矮的，分开摆放） -->
+    <!-- tank_A 移到左下角空旷区域 -->
+    <model name="tank_A">
+      <static>true</static>
+      <link name="body">
+        <pose>-45 -40 2.5 0 0 0</pose>
+        <collision name="collision_tankA">
+          <geometry><cylinder><radius>3.0</radius><length>5</length></cylinder></geometry>
+        </collision>
+        <visual name="visual_tankA">
+          <geometry><cylinder><radius>3.0</radius><length>5</length></cylinder></geometry>
+          <material><diffuse>0.6 0.6 0.65 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <!-- tank_B 移到右上角空旷区域 -->
+    <model name="tank_B">
+      <static>true</static>
+      <link name="body">
+        <pose>45 40 2.8 0 0 0</pose>
+        <collision name="collision_tankB">
+          <geometry><cylinder><radius>2.6</radius><length>5.6</length></cylinder></geometry>
+        </collision>
+        <visual name="visual_tankB">
+          <geometry><cylinder><radius>2.6</radius><length>5.6</length></cylinder></geometry>
+          <material><diffuse>0.62 0.62 0.67 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 球罐+支架 -->
+    <model name="spherical_tank">
+      <static>true</static>
+      <link name="sphere">
+        <pose>-15 -35 3.5 0 0 0</pose>
+        <collision name="collision_sphere">
+          <geometry><sphere><radius>3.5</radius></sphere></geometry>
+        </collision>
+        <visual name="visual_sphere">
+          <geometry><sphere><radius>3.5</radius></sphere></geometry>
+          <material><diffuse>0.55 0.55 0.6 1</diffuse></material>
+        </visual>
+      </link>
+      <!-- 四个支架腿 -->
+      <link name="leg1">
+        <pose>-15 -35 0 0 0 0</pose>
+        <visual name="visual_leg1">
+          <geometry><cylinder><radius>0.3</radius><length>3.2</length></cylinder></geometry>
+          <material><diffuse>0.45 0.45 0.5 1</diffuse></material>
+        </visual>
+        <collision name="collision_leg1">
+          <geometry><cylinder><radius>0.3</radius><length>3.2</length></cylinder></geometry>
+        </collision>
+      </link>
+      <link name="leg2">
+        <pose>-15 -35 0 0 0 0</pose>
+        <visual name="visual_leg2">
+          <geometry><cylinder><radius>0.3</radius><length>3.2</length></cylinder></geometry>
+          <material><diffuse>0.45 0.45 0.5 1</diffuse></material>
+        </visual>
+        <collision name="collision_leg2">
+          <geometry><cylinder><radius>0.3</radius><length>3.2</length></cylinder></geometry>
+        </collision>
+      </link>
+      <link name="leg3">
+        <pose>-15 -35 0 0 0 0</pose>
+        <visual name="visual_leg3">
+          <geometry><cylinder><radius>0.3</radius><length>3.2</length></cylinder></geometry>
+          <material><diffuse>0.45 0.45 0.5 1</diffuse></material>
+        </visual>
+        <collision name="collision_leg3">
+          <geometry><cylinder><radius>0.3</radius><length>3.2</length></cylinder></geometry>
+        </collision>
+      </link>
+      <link name="leg4">
+        <pose>-15 -35 0 0 0 0</pose>
+        <visual name="visual_leg4">
+          <geometry><cylinder><radius>0.3</radius><length>3.2</length></cylinder></geometry>
+          <material><diffuse>0.45 0.45 0.5 1</diffuse></material>
+        </visual>
+        <collision name="collision_leg4">
+          <geometry><cylinder><radius>0.3</radius><length>3.2</length></cylinder></geometry>
+        </collision>
+      </link>
+      <joint name="joint_leg1" type="fixed">
+        <parent>sphere</parent>
+        <child>leg1</child>
+        <pose>-2.5 -2.5 -3.5 0 0 0</pose>
+      </joint>
+      <joint name="joint_leg2" type="fixed">
+        <parent>sphere</parent>
+        <child>leg2</child>
+        <pose>2.5 -2.5 -3.5 0 0 0</pose>
+      </joint>
+      <joint name="joint_leg3" type="fixed">
+        <parent>sphere</parent>
+        <child>leg3</child>
+        <pose>-2.5 2.5 -3.5 0 0 0</pose>
+      </joint>
+      <joint name="joint_leg4" type="fixed">
+        <parent>sphere</parent>
+        <child>leg4</child>
+        <pose>2.5 2.5 -3.5 0 0 0</pose>
+      </joint>
+    </model>
+
+    <!-- ================= 烟囱（几何体） ================= -->
+    <model name="chimney_high">
+      <static>true</static>
+      <link name="body">
+        <pose>-25 -15 12 0 0 0</pose>
+        <collision name="collision_chimney1">
+          <geometry><cylinder><radius>1.6</radius><length>24</length></cylinder></geometry>
+        </collision>
+        <visual name="visual_chimney1">
+          <geometry><cylinder><radius>1.6</radius><length>24</length></cylinder></geometry>
+          <material><diffuse>0.35 0.35 0.38 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+    <model name="chimney_redwhite">
+      <static>true</static>
+      <link name="body">
+        <pose>30 -18 11 0 0 0</pose>
+        <collision name="collision_chimney2">
+          <geometry><cylinder><radius>1.4</radius><length>22</length></cylinder></geometry>
+        </collision>
+        <visual name="visual_chimney2">
+          <geometry><cylinder><radius>1.4</radius><length>22</length></cylinder></geometry>
+          <material><diffuse>0.8 0.2 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ================= 红色自发光气体源（3个） ================= -->
+    <model name="gas_source_chimney1">
+      <static>true</static>
+      <link name="emitter">
+        <pose>-25 -15 24 0 0 0</pose>
+        <visual name="visual_gas1">
+          <geometry><cylinder><radius>1.8</radius><length>0.8</length></cylinder></geometry>
+          <material><diffuse>1 0 0 1</diffuse><emissive>1 0 0 0.8</emissive></material>
+        </visual>
+      </link>
+    </model>
+    <model name="gas_source_chimney2">
+      <static>true</static>
+      <link name="emitter">
+        <pose>30 -18 22 0 0 0</pose>
+        <visual name="visual_gas2">
+          <geometry><cylinder><radius>1.5</radius><length>0.7</length></cylinder></geometry>
+          <material><diffuse>1 0 0 1</diffuse><emissive>1 0 0 0.8</emissive></material>
+        </visual>
+      </link>
+    </model>
+    <model name="gas_source_roof">
+      <static>true</static>
+      <link name="emitter">
+        <pose>-30 -25 11 0 0 0</pose>
+        <visual name="visual_gas3">
+          <geometry><sphere><radius>1.2</radius></sphere></geometry>
+          <material><diffuse>1 0 0 1</diffuse><emissive>1 0 0 0.8</emissive></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ================= 树木（全部使用模型 oak_tree） ================= -->
+    <include><uri>model://oak_tree</uri><name>oak_tree_1</name><pose>5 -20 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_2</name><pose>-15 20 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_3</name><pose>30 -5 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_4</name><pose>25 10 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_5</name><pose>-25 20 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_6</name><pose>0 -15 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_7</name><pose>15 20 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_8</name><pose>-20 -10 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_9</name><pose>-5 -20 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_10</name><pose>-45 -20 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_11</name><pose>35 35 0 0 0 0</pose></include>
+    <include><uri>model://oak_tree</uri><name>oak_tree_12</name><pose>-40 40 0 0 0 0</pose></include>
+
+  </world>
+</sdf>

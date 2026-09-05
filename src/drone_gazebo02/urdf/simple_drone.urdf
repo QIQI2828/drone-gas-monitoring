@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<robot name="simple_drone">
+
+  <!-- ================= 无人机主体 ================= -->
+  <link name="base_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.4 0.4 0.1"/></geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.4 0.4 0.1"/></geometry>
+      <material name="blue"><color rgba="0 0 1 1"/></material>
+    </visual>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.02"/>
+    </inertial>
+  </link>
+
+  <!-- Gazebo 位姿发布插件 -->
+  <gazebo>
+    <plugin name="drone_pose_publisher" filename="libgazebo_ros_p3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>30.0</updateRate>
+      <bodyName>base_link</bodyName>
+      <topicName>/drone/pose</topicName>
+      <frameName>world</frameName>
+    </plugin>
+  </gazebo>
+
+  <!-- ================= 螺旋桨（连续旋转关节） ================= -->
+  <!-- 螺旋桨1 前左 -->
+  <link name="propeller1">
+    <visual><geometry><cylinder length="0.3" radius="0.02"/></geometry><material name="black"><color rgba="0 0 0 1"/></material></visual>
+    <collision><geometry><cylinder length="0.3" radius="0.02"/></geometry></collision>
+    <inertial><mass value="0.05"/><inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/></inertial>
+  </link>
+  <joint name="base_to_prop1" type="continuous">
+    <parent link="base_link"/><child link="propeller1"/>
+    <origin xyz="0.2 0.2 0.12" rpy="0 1.57 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- 螺旋桨2 前右 -->
+  <link name="propeller2">
+    <visual><geometry><cylinder length="0.3" radius="0.02"/></geometry><material name="black"/></visual>
+    <collision><geometry><cylinder length="0.3" radius="0.02"/></geometry></collision>
+    <inertial><mass value="0.05"/><inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/></inertial>
+  </link>
+  <joint name="base_to_prop2" type="continuous">
+    <parent link="base_link"/><child link="propeller2"/>
+    <origin xyz="0.2 -0.2 0.12" rpy="0 1.57 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- 螺旋桨3 后左 -->
+  <link name="propeller3">
+    <visual><geometry><cylinder length="0.3" radius="0.02"/></geometry><material name="black"/></visual>
+    <collision><geometry><cylinder length="0.3" radius="0.02"/></geometry></collision>
+    <inertial><mass value="0.05"/><inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/></inertial>
+  </link>
+  <joint name="base_to_prop3" type="continuous">
+    <parent link="base_link"/><child link="propeller3"/>
+    <origin xyz="-0.2 0.2 0.12" rpy="0 1.57 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- 螺旋桨4 后右 -->
+  <link name="propeller4">
+    <visual><geometry><cylinder length="0.3" radius="0.02"/></geometry><material name="black"/></visual>
+    <collision><geometry><cylinder length="0.3" radius="0.02"/></geometry></collision>
+    <inertial><mass value="0.05"/><inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/></inertial>
+  </link>
+  <joint name="base_to_prop4" type="continuous">
+    <parent link="base_link"/><child link="propeller4"/>
+    <origin xyz="-0.2 -0.2 0.12" rpy="0 1.57 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- ================= 支撑腿（三个独立 link） ================= -->
+  <!-- 腿1 前左 -->
+  <link name="leg1">
+    <visual><geometry><cylinder length="0.1" radius="0.03"/></geometry><material name="gray"><color rgba="0.5 0.5 0.5 1"/></material></visual>
+    <collision><geometry><cylinder length="0.1" radius="0.03"/></geometry></collision>
+    <inertial><mass value="0.02"/><inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/></inertial>
+  </link>
+  <joint name="base_to_leg1" type="fixed">
+    <parent link="base_link"/><child link="leg1"/>
+    <origin xyz="0.15 0.15 -0.05" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 腿2 前右 -->
+  <link name="leg2">
+    <visual><geometry><cylinder length="0.1" radius="0.03"/></geometry><material name="gray"/></visual>
+    <collision><geometry><cylinder length="0.1" radius="0.03"/></geometry></collision>
+    <inertial><mass value="0.02"/><inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/></inertial>
+  </link>
+  <joint name="base_to_leg2" type="fixed">
+    <parent link="base_link"/><child link="leg2"/>
+    <origin xyz="0.15 -0.15 -0.05" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 腿3 后中 -->
+  <link name="leg3">
+    <visual><geometry><cylinder length="0.1" radius="0.03"/></geometry><material name="gray"/></visual>
+    <collision><geometry><cylinder length="0.1" radius="0.03"/></geometry></collision>
+    <inertial><mass value="0.02"/><inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/></inertial>
+  </link>
+  <joint name="base_to_leg3" type="fixed">
+    <parent link="base_link"/><child link="leg3"/>
+    <origin xyz="-0.15 0 -0.05" rpy="0 0 0"/>
+  </joint>
+
+</robot>
